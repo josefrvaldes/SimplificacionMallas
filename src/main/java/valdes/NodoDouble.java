@@ -3,7 +3,6 @@ package valdes;
 /**
  * Created by neiklotv on 1/6/17.
  */
-@Deprecated
 public class NodoDouble extends Nodo {
 
     private double x;
