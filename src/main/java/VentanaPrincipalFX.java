@@ -1,5 +1,3 @@
-package valdes;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -21,7 +19,7 @@ public class VentanaPrincipalFX extends Application {
     public void start(Stage stage) throws Exception {
         stage.setTitle("Trabajo final Matemáticas II, Ingeniería Multimedia - Jose Valdés Sirvent");
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("../ventana_principal_fx_layout.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("ventana_principal_fx_layout.fxml"));
         Parent root = loader.load();
         VentanaPrincipalController controller = loader.getController();
         controller.setStage(stage);

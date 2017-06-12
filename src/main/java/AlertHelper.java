@@ -1,5 +1,3 @@
-package valdes;
-
 import javafx.scene.control.Alert;
 
 /**

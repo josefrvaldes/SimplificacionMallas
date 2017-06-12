@@ -1,5 +1,3 @@
-package valdes;
-
 /**
  * Created by neiklotv on 1/6/17.
  */

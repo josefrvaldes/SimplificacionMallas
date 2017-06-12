@@ -1,5 +1,3 @@
-package valdes;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -124,7 +122,7 @@ public class NodoHelper {
         int nuevaY = (int) Math.round((origen.getY() + r * p.getY()) / (1 + r));
         p.setX(nuevaX);
         p.setY(nuevaY);
-        //return new valdes.NodoInt(nuevaX, nuevaY);
+        //return new NodoInt(nuevaX, nuevaY);
     }
 
     public static int[] getResolucion(List<NodoInt> nodos) {

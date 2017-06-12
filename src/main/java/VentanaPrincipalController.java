@@ -1,5 +1,3 @@
-package valdes;
-
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -40,6 +38,10 @@ public class VentanaPrincipalController {
 
     @FXML
     private void initialize() {
+
+    }
+
+    public VentanaPrincipalController() {
 
     }
 
