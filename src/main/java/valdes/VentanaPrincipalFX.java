@@ -19,7 +19,7 @@ public class VentanaPrincipalFX extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        stage.setTitle("Trabajo final Jose Valdés Sirvent");
+        stage.setTitle("Trabajo final Matemáticas II, Ingeniería Multimedia - Jose Valdés Sirvent");
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../ventana_principal_fx_layout.fxml"));
         Parent root = loader.load();

@@ -9,7 +9,10 @@
 <?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
 <VBox fx:id="contenedor" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="valdes.VentanaPrincipalController">
+
+    <Label fx:id="lblInfo" text="Sin datos cargados"/>
 
     <StackPane prefHeight="306.0" prefWidth="600.0" style="-fx-border-color: black;">
         <padding>

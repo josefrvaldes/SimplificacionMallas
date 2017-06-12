@@ -14,19 +14,14 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class ImageHelper {
 
-    public static List<NodoInt> getNodosDesdeImagen(String nombreArchivo, int porcentajeAleatorio) {
+    public static List<NodoInt> getNodosDesdeImagen(String nombreArchivo, int porcentajeAleatorio) throws IOException {
 
         List<NodoInt> nodos = new ArrayList<>();
         BufferedImage img;
         File f;
 
-        try {
-            f = new File(nombreArchivo);
-            img = ImageIO.read(f);
-        } catch (IOException e) {
-            System.out.println("Error leyendo la imagen");
-            return nodos;
-        }
+        f = new File(nombreArchivo);
+        img = ImageIO.read(f);
 
         int width = img.getWidth();
         int height = img.getHeight();

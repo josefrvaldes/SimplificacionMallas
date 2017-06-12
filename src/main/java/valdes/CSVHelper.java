@@ -9,75 +9,40 @@ import java.util.List;
  */
 public class CSVHelper {
 
-    public static List<Nodo> leerNodosDeCSV(String nombreArchivo, boolean isInt) {
-        BufferedReader br = null;
+    public static List<Nodo> leerNodosDeCSV(String nombreArchivo, boolean isInt) throws IOException {
         String line;
         String cvsSplitBy = ";";
-        List<Nodo> salida = new ArrayList<Nodo>();
+        List<Nodo> salida = new ArrayList<>();
 
-        try {
 
-            br = new BufferedReader(new FileReader("./" + nombreArchivo));
-            while ((line = br.readLine()) != null) {
-                String[] valores = line.split(cvsSplitBy);
-                boolean error = false;
-                int x = 0;
-                int y = 0;
-                try {
-                    x = Integer.valueOf(valores[0]);
-                    y = Integer.valueOf(valores[1]);
-                } catch (Exception e) {
-                    System.out.println("Hubo un error al convertir a decimal");
-                    error = true;
-                }
-                if (!error) {
-                    if (isInt) {
-                        NodoInt n = new NodoInt(x, y);
-                        salida.add(n);
-                    } else {
-                        NodoDouble n = new NodoDouble(x, y);
-                        salida.add(n);
-                    }
-                }
-            }
+        BufferedReader writer = new BufferedReader(new FileReader("./" + nombreArchivo));
+        while ((line = writer.readLine()) != null) {
+            String[] valores = line.split(cvsSplitBy);
 
-        } catch (FileNotFoundException e) {
-            System.out.println("El archivo introducido no existe");
-        } catch (IOException e) {
-            System.out.println("Hubo un error abriendo el archivo");
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    System.out.println("Hubo un error cerrando el archivo");
-                }
+            int x = Integer.valueOf(valores[0]);
+            int y = Integer.valueOf(valores[1]);
+
+            if (isInt) {
+                NodoInt n = new NodoInt(x, y);
+                salida.add(n);
+            } else {
+                NodoDouble n = new NodoDouble(x, y);
+                salida.add(n);
             }
         }
+        writer.close();
+
         return salida;
     }
 
-    public static void escribirNodosIntEnCSV(List<NodoInt> nodos, String nombreArchivo) {
-        BufferedWriter writer = null;
-        try {
+    public static void escribirNodosIntEnCSV(List<NodoInt> nodos, String nombreArchivo) throws IOException {
+        File file = new File(nombreArchivo);
 
-            File file = new File(nombreArchivo);
-
-            writer = new BufferedWriter(new FileWriter(file));
-            for (Nodo n : nodos) {
-                writer.write(((NodoInt) n).getX() + ";" + ((NodoInt) n).getY() + System.getProperty("line.separator"));
-            }
-
-        } catch (IOException e) {
-            System.out.println("Hubo un error al escribir archivo CSV");
-        } finally {
-            try {
-                if (writer != null)
-                    writer.close();
-            } catch (IOException e) {
-                System.out.println("Hubo un error al escribir archivo CSV");
-            }
+        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        for (Nodo n : nodos) {
+            writer.write(((NodoInt) n).getX() + ";" + ((NodoInt) n).getY() + System.getProperty("line.separator"));
         }
+        writer.close();
     }
 
 }

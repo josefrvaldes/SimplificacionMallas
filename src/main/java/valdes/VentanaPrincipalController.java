@@ -3,10 +3,13 @@ package valdes;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -14,6 +17,8 @@ import java.util.List;
  */
 public class VentanaPrincipalController {
 
+    @FXML
+    private Label lblInfo;
     @FXML
     private TextField txtNombreCSV;
     @FXML
@@ -45,7 +50,18 @@ public class VentanaPrincipalController {
     private void importarImagen() {
         int porcentajeAleatorio = this.getPorcentajeAleatorio();
         String nombreImgEntrada = txtNombreImagen.getText();
-        importarImagenACSVYPintar(nombreImgEntrada, porcentajeAleatorio);
+        if(nombreImgEntrada.equals(""))
+            nombreImgEntrada = "test.jpg";
+
+        try {
+            importarImagenACSVYPintar(nombreImgEntrada, porcentajeAleatorio);
+            lblInfo.setText("Imagen cargada: " + nombreImgEntrada);
+            txtPorcAleatorio.setText(String.valueOf(porcentajeAleatorio));
+            txtNombreImagen.setText(nombreImgEntrada);
+        } catch (IOException e) {
+            System.out.println("Error leyendo la imagen");
+            AlertHelper.mostrarError("No se pudo importar la imagen");
+        }
     }
 
     @FXML
@@ -56,15 +72,21 @@ public class VentanaPrincipalController {
     private int getPorcentajeAleatorio() {
         String auxPorcAleatorio = txtPorcAleatorio.getText();
         int porcentajeAleatorio = 2;
+
+        if(auxPorcAleatorio.equals("")) {
+            return 2;
+        }
+
         try {
             porcentajeAleatorio = Integer.parseInt(auxPorcAleatorio);
         } catch (Exception ex) {
-            System.out.println("Se utilizará el porcentaje aleatorio por defecto");
+            AlertHelper.mostrarError("El formato del porcentaje introducido no es correcto.");
         }
+
         return porcentajeAleatorio;
     }
 
-    private void importarImagenACSVYPintar(String nombreImagen, int porcAleatorio) {
+    private void importarImagenACSVYPintar(String nombreImagen, int porcAleatorio) throws IOException {
         this.nodosOriginales = this.getNodosDesdeImagen(nombreImagen, porcAleatorio);
 
         CSVHelper.escribirNodosIntEnCSV(nodosOriginales, "salida.csv");
@@ -72,36 +94,42 @@ public class VentanaPrincipalController {
         pintarNodosIntEnCanvas(nodosOriginales);
     }
 
-    private List<NodoInt> getNodosDesdeImagen(String nombreImagen, int porcAleatorio) {
+    private List<NodoInt> getNodosDesdeImagen(String nombreImagen, int porcAleatorio) throws IOException {
         if (nombreImagen.equals(""))
             nombreImagen = "test.jpg";
         return ImageHelper.getNodosDesdeImagen(nombreImagen, porcAleatorio);
     }
 
-    private void pintarCSVEnCanvas(String nombreArchivo) {
-        if (nombreArchivo.equals("")) {
+    private void pintarCSVEnCanvas() {
+        String nombreArchivo = "salida.csv";
+        if (!txtNombreCSV.getText().equals(""))
             nombreArchivo = txtNombreCSV.getText();
+
+        try {
+            this.nodosOriginales = (List<NodoInt>) (Object) CSVHelper.leerNodosDeCSV(nombreArchivo, true);
+
+            this.pintarNodosIntEnCanvas(this.nodosOriginales);
+
+            this.lblInfo.setText("CSV cargado: " + nombreArchivo);
+            this.txtNombreCSV.setText(nombreArchivo);
+        } catch (FileNotFoundException e) {
+            AlertHelper.mostrarError("No se encontró el archivo CSV");
+        } catch (IOException e) {
+            AlertHelper.mostrarError("Hubo un error al procesar el archivo CSV");
+        } catch (Exception e) {
+            AlertHelper.mostrarError("Archivo CSV con formato incorrecto");
         }
-
-        if (nombreArchivo.equals(""))
-            nombreArchivo = "salida.csv";
-
-        this.nodosOriginales = (List<NodoInt>) (Object) CSVHelper.leerNodosDeCSV(nombreArchivo, true);
-
-        this.pintarNodosIntEnCanvas(this.nodosOriginales);
     }
 
     private void pintarNodosIntEnCanvas(List<NodoInt> nodos) {
         int[] resolucion = NodoHelper.getResolucion(nodos);
         resetearDimensionesCanvas(resolucion[0], resolucion[1]);
-        //pintarPuntos(mallaInt.getMallaOriginal(), canvas);
         pintarPuntos(nodos);
-        //System.out.println(mallaInt);
     }
 
     @FXML
     private void clickImportarCSV() {
-        pintarCSVEnCanvas("");
+        pintarCSVEnCanvas();
     }
 
     private void pintarPuntos(List<NodoInt> nodos) {
@@ -189,11 +217,64 @@ public class VentanaPrincipalController {
     }
 
     private void simplificar() {
-        int numPuntos = Integer.parseInt(txtPuntosASimplificar.getText());
-        double fraccion1 = Double.parseDouble(txtFraccion1.getText());
-        double fraccion2 = Double.parseDouble(txtFraccion2.getText());
-        List<NodoInt> nodosSimplificados = NodoHelper.simplificar(this.nodosOriginales,numPuntos, fraccion1, fraccion2);
-        CSVHelper.escribirNodosIntEnCSV(nodosSimplificados, "salida_simplificada.csv");
+        if(nodosOriginales == null || nodosOriginales.size() == 0) {
+            AlertHelper.mostrarError("No hay datos cargados");
+            return;
+        }
+
+        boolean error = false;
+
+        int numPuntos = 100;
+        double fraccion1 = 0.25;
+        double fraccion2 = 0.125;
+
+        if(txtPuntosASimplificar.getText().equals("")) {
+            txtPuntosASimplificar.setText(String.valueOf(numPuntos));
+        } else {
+            try {
+                numPuntos = Integer.parseInt(txtPuntosASimplificar.getText());
+            } catch (Exception e) {
+                error = true;
+            }
+        }
+
+        if(txtFraccion1.getText().equals("")) {
+            txtFraccion1.setText(String.valueOf(fraccion1));
+        } else {
+            try {
+                fraccion1 = Double.parseDouble(txtFraccion1.getText());
+            } catch (Exception e) {
+                error = true;
+            }
+            if(fraccion1 < 0 || fraccion1 > 1) {
+                error = true;
+            }
+        }
+
+        if(txtFraccion2.getText().equals("")) {
+            txtFraccion2.setText(String.valueOf(fraccion2));
+        } else {
+            try {
+                fraccion2 = Double.parseDouble(txtFraccion2.getText());
+            } catch (Exception e) {
+                error = true;
+            }
+            if(fraccion2 < 0 || fraccion2 > 1) {
+                error = true;
+            }
+        }
+
+        if(error) {
+            AlertHelper.mostrarError("Alguno de los parámetros introducidos es inválido");
+            return;
+        }
+
+        List<NodoInt> nodosSimplificados = NodoHelper.simplificar(this.nodosOriginales, numPuntos, fraccion1, fraccion2);
+        try {
+            CSVHelper.escribirNodosIntEnCSV(nodosSimplificados, "salida_simplificada.csv");
+        } catch (IOException e) {
+            AlertHelper.mostrarError("No se pudo exportar a CSV");
+        }
         this.pintarPuntos(nodosSimplificados);
     }
 
@@ -206,7 +287,7 @@ public class VentanaPrincipalController {
         }
 
         if (alto > stage.getHeight()) {
-            stage.setHeight(alto + 210);
+            stage.setHeight(alto + 220);
         }
     }
 
